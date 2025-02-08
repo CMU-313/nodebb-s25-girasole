@@ -28,16 +28,18 @@ app.onDomReady();
 			});
 		}
 
-		logoutTimer = setTimeout(function () {
-			require(['bootbox'], function (bootbox) {
-				bootbox.alert({
-					closeButton: false,
-					message: logoutMessage,
-					callback: function () {
-						window.location.reload();
-					},
-				});
+		function onAlert(bootbox) {
+			bootbox.alert({
+				closeButton: false,
+				message: logoutMessage,
+				callback: function () {
+					window.location.reload();
+				},
 			});
+		}
+
+		logoutTimer = setTimeout(function () {
+			require(['bootbox'], onAlert);
 		}, 3600000);
 	}
 
