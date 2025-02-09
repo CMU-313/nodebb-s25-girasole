@@ -7,6 +7,14 @@
 	<a component="topic/unlock" href="#" class="dropdown-item rounded-1 d-flex align-items-center gap-2 {{{ if !locked }}}hidden{{{ end }}}" role="menuitem"><i class="fa fa-fw fa-unlock text-secondary"></i> [[topic:thread-tools.unlock]]</a>
 </li>
 
+<li {{if markedAnonymous}}hidden{{end}}>
+	<a component="topic/private" href="#" class="dropdown-item rounded-1 d-flex align-items-center gap-2" role="menuitem"><i class="fa fa-fw fa-arrows text-secondary"></i> Make Post Private</a>
+</li>
+
+<li {{if !markedAnonymous}}hidden{{end}}>
+	<a component="topic/unprivate" href="#" class="dropdown-item rounded-1 d-flex align-items-center gap-2" role="menuitem"><i class="fa fa-fw fa-arrows text-secondary"></i> Make Post Public</a>
+</li>
+
 <li {{{ if pinned }}}hidden{{{ end }}}>
 	<a component="topic/pin" href="#" class="dropdown-item rounded-1 d-flex align-items-center gap-2 {{{ if pinned }}}hidden{{{ end }}}" role="menuitem"><i class="fa fa-fw fa-thumb-tack text-secondary"></i> [[topic:thread-tools.pin]]</a>
 </li>

@@ -51,6 +51,16 @@ define('forum/topic/threadTools', [
 			return false;
 		});
 
+		topicContainer.on('click', '[component="topic/private"]', function () {
+			topicCommand('put', '/private', 'private');
+			return false;
+		});
+
+		topicContainer.on('click', '[component="topic/public"]', function () {
+			topicCommand('del', '/private', 'public');
+			return false;
+		});
+
 		topicContainer.on('click', '[component="topic/pin"]', function () {
 			topicCommand('put', '/pin', 'pin');
 			return false;
@@ -245,6 +255,12 @@ define('forum/topic/threadTools', [
 
 			case 'pin':
 				ThreadTools.requestPinExpiry(body, execute.bind(null, true));
+				break;
+
+			case 'private':
+				data = plugins.hooks.fire(`filter:topic.${hook}`, { topicData: topicData, markedAnonymous: markedAnonymous, uid: uid, isDelete: isDelete, canDelete: canDelete, canRestore: canDelete });
+            	if(data.markedAnonymous) data.markedAnonymous = false;
+				else data.markedAnonymous = true;
 				break;
 
 			default:
