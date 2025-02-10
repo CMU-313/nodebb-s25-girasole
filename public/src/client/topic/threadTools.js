@@ -56,6 +56,16 @@ define('forum/topic/threadTools', [
 			return false;
 		});
 
+		topicContainer.on('click', '[component="topic/private"]', function () {
+            console.log("HIT treadTools.js line 60");
+            topicCommand('put', '/private', 'private');
+			return false;
+        });
+        topicContainer.on('click', '[component="topic/unprivate"]', function () {
+            topicCommand('del', '/private', 'private');
+			return false;
+        });
+
 		topicContainer.on('click', '[component="topic/unpin"]', function () {
 			topicCommand('del', '/pin', 'unpin');
 			return false;
@@ -373,6 +383,21 @@ define('forum/topic/threadTools', [
 		}
 		ajaxify.data.pinned = data.pinned;
 
+		posts.addTopicEvents(data.events);
+	};
+
+	ThreadTools.setPrivatedState = function (data) {
+		const threadEl = components.get('topic');
+		if (parseInt(data.tid, 10) !== parseInt(threadEl.attr('data-tid'), 10)) {
+			return;
+		}
+		components.get('topic/private').toggleClass('hidden', data.private).parent().attr('hidden', data.private ? '' : null);
+		components.get('topic/unprivate').toggleClass('hidden', !data.private).parent().attr('hidden', !data.private ? '' : null);
+		const icon = $('[component="topic/labels"] [component="topic/privated"]');
+		icon.toggleClass('hidden', !data.private);
+		ajaxify.data.private = data.private;
+        data.events = data.events ? data.events : [];
+        console.log("EVENTS", JSON.stringify(data.events));
 		posts.addTopicEvents(data.events);
 	};
 
