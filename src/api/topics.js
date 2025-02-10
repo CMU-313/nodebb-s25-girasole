@@ -149,6 +149,14 @@ topicsAPI.unpin = async function (caller, data) {
 	});
 };
 
+topicsAPI.private = async function (caller, { tids }) {
+	await doTopicAction('private', 'event:topic_privated', caller, { tids });
+};
+
+topicsAPI.unprivate = async function (caller, { tids }) {
+	await doTopicAction('unprivate', 'event:topic_unprivated', caller, { tids });
+};
+
 topicsAPI.lock = async function (caller, data) {
 	await doTopicAction('lock', 'event:topic_locked', caller, {
 		tids: data.tids,

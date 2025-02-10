@@ -118,6 +118,14 @@ module.exports = function (Topics) {
 		return await togglePin(tid, uid, false);
 	};
 
+    topicTools.private = async function (tid, uid) {
+		return await togglePrivate(tid, uid, true);
+	};
+
+    topicTools.unprivate = async function (tid, uid) {
+		return await togglePrivate(tid, uid, false);
+	};
+
 	topicTools.setPinExpiry = async (tid, expiry, uid) => {
 		if (isNaN(parseInt(expiry, 10)) || expiry <= Date.now()) {
 			throw new Error('[[error:invalid-data]]');
@@ -148,6 +156,51 @@ module.exports = function (Topics) {
 
 		return tids.filter(Boolean);
 	};
+
+    async function togglePrivate(tid, uid, priv) {
+		const topicData = await Topics.getTopicData(tid);
+		if (!topicData) {
+			throw new Error('[[error:no-topic]]');
+		}
+
+		if (uid !== 'system' && !await privileges.topics.isAdminOrMod(tid, uid)) {
+			throw new Error('[[error:no-privileges]]');
+		}
+
+		const promises = [
+			Topics.setTopicField(tid, 'private', priv ? 1 : 0),
+			// Topics.events.log(tid, { type: priv ? 'private' : 'unprivate', uid }),
+		];
+		if (priv) {
+			promises.push(db.sortedSetAdd(`cid:${topicData.cid}:tids:private`, Date.now(), tid));
+			promises.push(db.sortedSetsRemove([
+				`cid:${topicData.cid}:tids`,
+				`cid:${topicData.cid}:tids:create`,
+				`cid:${topicData.cid}:tids:posts`,
+				`cid:${topicData.cid}:tids:votes`,
+				`cid:${topicData.cid}:tids:views`,
+			], tid));
+		} else {
+			promises.push(db.sortedSetRemove(`cid:${topicData.cid}:tids:private`, tid));
+			promises.push(db.sortedSetAddBulk([
+				[`cid:${topicData.cid}:tids`, topicData.lastposttime, tid],
+				[`cid:${topicData.cid}:tids:create`, topicData.timestamp, tid],
+				[`cid:${topicData.cid}:tids:posts`, topicData.postcount, tid],
+				[`cid:${topicData.cid}:tids:votes`, parseInt(topicData.votes, 10) || 0, tid],
+				[`cid:${topicData.cid}:tids:views`, topicData.viewcount, tid],
+			]));
+		}
+
+		const results = await Promise.all(promises);
+
+		topicData.isPrivate = priv; // deprecate in v2.0
+		topicData.private = priv;
+		topicData.events = results[1];
+
+		plugins.hooks.fire('action:topic.private', { topic: _.clone(topicData), uid });
+
+		return topicData;
+	}
 
 	async function togglePin(tid, uid, pin) {
 		const topicData = await Topics.getTopicData(tid);
