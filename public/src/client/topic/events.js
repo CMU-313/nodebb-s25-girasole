@@ -30,8 +30,8 @@ define('forum/topic/events', [
 		'event:topic_unpinned': threadTools.setPinnedState,
 
 		'event:topic_privated': threadTools.setPrivatedState,
-		'event:topic_unprivated': threadTools.setPrivatedState,	
-		
+		'event:topic_unprivated': threadTools.setPrivatedState,
+
 		'event:topic_moved': onTopicMoved,
 
 		'event:post_edited': onPostEdited,

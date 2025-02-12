@@ -118,11 +118,11 @@ module.exports = function (Topics) {
 		return await togglePin(tid, uid, false);
 	};
 
-    topicTools.private = async function (tid, uid) {
+	topicTools.private = async function (tid, uid) {
 		return await togglePrivate(tid, uid, true);
 	};
 
-    topicTools.unprivate = async function (tid, uid) {
+	topicTools.unprivate = async function (tid, uid) {
 		return await togglePrivate(tid, uid, false);
 	};
 
@@ -157,7 +157,7 @@ module.exports = function (Topics) {
 		return tids.filter(Boolean);
 	};
 
-    async function togglePrivate(tid, uid, priv) {
+	async function togglePrivate(tid, uid, priv) {
 		const topicData = await Topics.getTopicData(tid);
 		if (!topicData) {
 			throw new Error('[[error:no-topic]]');
