@@ -5,6 +5,7 @@ const _ = require('lodash');
 const db = require('../database');
 const user = require('../user');
 const categories = require('../categories');
+const topics = require('../topics');
 const messaging = require('../messaging');
 const privileges = require('../privileges');
 const meta = require('../meta');

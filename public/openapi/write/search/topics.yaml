@@ -5,7 +5,7 @@ get:
   description: |
     This operation returns a set of topics matching the keyword search.
 
-    If post topics are already filtere through, they are passed in via the query.
+    If post topics are already filtered through, they are passed in via the query.
   parameters:
     - in: query
       name: 'keyword'
