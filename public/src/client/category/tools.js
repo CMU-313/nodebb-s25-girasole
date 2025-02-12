@@ -136,7 +136,7 @@ define('forum/category/tools', [
 		socket.on('event:topic_unlocked', setLockedState);
 		socket.on('event:topic_pinned', setPinnedState);
 		socket.on('event:topic_unpinned', setPinnedState);
-        socket.on('event:topic_privated', setPrivatedState);
+		socket.on('event:topic_privated', setPrivatedState);
 		socket.on('event:topic_unprivated', setPrivatedState);
 		socket.on('event:topic_moved', onTopicMoved);
 	};
@@ -184,7 +184,7 @@ define('forum/category/tools', [
 		socket.removeListener('event:topic_unlocked', setLockedState);
 		socket.removeListener('event:topic_pinned', setPinnedState);
 		socket.removeListener('event:topic_unpinned', setPinnedState);
-        socket.removeListener('event:topic_privated', setPrivatedState);
+		socket.removeListener('event:topic_privated', setPrivatedState);
 		socket.removeListener('event:topic_unprivated', setPrivatedState);
 		socket.removeListener('event:topic_moved', onTopicMoved);
 	};
@@ -214,7 +214,7 @@ define('forum/category/tools', [
 		const isAnyDeleted = isAny(isTopicDeleted, tids);
 		const areAllDeleted = areAll(isTopicDeleted, tids);
 		const isAnyPinned = isAny(isTopicPinned, tids);
-        const isAnyPrivated = isAny(isTopicPrivated, tids);
+		const isAnyPrivated = isAny(isTopicPrivated, tids);
 		const isAnyLocked = isAny(isTopicLocked, tids);
 		const isAnyScheduled = isAny(isTopicScheduled, tids);
 		const areAllScheduled = areAll(isTopicScheduled, tids);
@@ -229,7 +229,7 @@ define('forum/category/tools', [
 		components.get('topic/pin').toggleClass('hidden', areAllScheduled || isAnyPinned);
 		components.get('topic/unpin').toggleClass('hidden', areAllScheduled || !isAnyPinned);
 
-        components.get('topic/private').toggleClass('hidden', isAnyPrivated);
+		components.get('topic/private').toggleClass('hidden', isAnyPrivated);
 		components.get('topic/unprivate').toggleClass('hidden', !isAnyPrivated);
 
 		components.get('topic/merge').toggleClass('hidden', isAnyScheduled);
@@ -265,7 +265,7 @@ define('forum/category/tools', [
 		return getTopicEl(tid).hasClass('pinned');
 	}
 
-    function isTopicPrivated(tid) {
+	function isTopicPrivated(tid) {
 		return getTopicEl(tid).hasClass('privated');
 	}
 
@@ -290,7 +290,7 @@ define('forum/category/tools', [
 		ajaxify.refresh();
 	}
 
-    function setPrivatedState(data) {
+	function setPrivatedState(data) {
 		const topic = getTopicEl(data.tid);
 		topic.toggleClass('privated', data.isPinned);
 		topic.find('[component="topic/privated"]').toggleClass('hidden', !data.isPrivated);
