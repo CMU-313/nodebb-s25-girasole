@@ -99,6 +99,18 @@ if (document.readyState === 'loading') {
 			app.newTopic();
 		});
 
+		$('body').on('click', '#new_repost', function (e) {
+			e.preventDefault();
+			var topicData = {
+				title: ajaxify.data.title,
+				body: null,
+			};
+			socket.emit('plugins.composer.push', ajaxify.data.mainPid, function (_, postData) {
+				topicData.body = '' + postData.body;
+				app.newTopic(topicData);
+			});
+		});
+
 		registerServiceWorker();
 
 		require([
