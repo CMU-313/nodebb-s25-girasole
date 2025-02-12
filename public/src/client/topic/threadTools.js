@@ -57,14 +57,13 @@ define('forum/topic/threadTools', [
 		});
 
 		topicContainer.on('click', '[component="topic/private"]', function () {
-            console.log("HIT treadTools.js line 60");
-            topicCommand('put', '/private', 'private');
+			topicCommand('put', '/private', 'private');
 			return false;
-        });
-        topicContainer.on('click', '[component="topic/unprivate"]', function () {
-            topicCommand('del', '/private', 'private');
+		});
+		topicContainer.on('click', '[component="topic/unprivate"]', function () {
+			topicCommand('del', '/private', 'private');
 			return false;
-        });
+		});
 
 		topicContainer.on('click', '[component="topic/unpin"]', function () {
 			topicCommand('del', '/pin', 'unpin');
@@ -396,8 +395,7 @@ define('forum/topic/threadTools', [
 		const icon = $('[component="topic/labels"] [component="topic/privated"]');
 		icon.toggleClass('hidden', !data.private);
 		ajaxify.data.private = data.private;
-        data.events = data.events ? data.events : [];
-        console.log("EVENTS", JSON.stringify(data.events));
+		data.events = data.events ? data.events : [];
 		posts.addTopicEvents(data.events);
 	};
 
