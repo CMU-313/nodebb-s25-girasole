@@ -375,17 +375,27 @@ describe('API', async () => {
 		paths.forEach((pathObj) => {
 			describe(`${pathObj.method.toUpperCase()} ${pathObj.path}`, () => {
 				it('should private a topic successfully', async () => {
+					if (pathObj.path !== '/topics/{tid}' || pathObj.method.toLowerCase() !== 'put') {
+						return;
+					}
+
 					const topicId = '1';
 					const payload = { expiry: 1585337827953 };
-				
-					const response = await request(app)
-					  .put(`/topics/${topicId}`)
-					  .send(payload)
-					  .set('Accept', 'application/json');
-				
-					expect(response.statusCode).toBe(200);
-					expect(response.body).toHaveProperty('status');
-					expect(response.body).toHaveProperty('response');
+
+					const topicsUrl = `${nconf.get('url')}/topics/${topicId}`;
+
+					const response = await request.put(topicsUrl, {
+						jar: jar,
+						headers: {
+							Accept: 'application/json',
+							'x-csrf-token': csrfToken,
+						},
+						body: payload,
+					});
+
+					assert.strictEqual(response.response.statusCode, 200, 'Expected status code 200');
+					assert(response.body.hasOwnProperty('status'), 'Response should have property "status"');
+					assert(response.body.hasOwnProperty('response'), 'Response should have property "response"');
 				});
 
 				it('should be defined in schema docs', () => {
