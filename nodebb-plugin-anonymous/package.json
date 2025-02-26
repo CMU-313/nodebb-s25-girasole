@@ -1,0 +1,14 @@
+{
+  "name": "nodebb-plugin-anonymous",
+  "version": "1.0.0",
+  "description": "Plugin to enable anonymous posting in NodeBB",
+  "main": "library.js",
+  "engines": {
+    "node": ">=18",
+    "nodebb": ">=3.8.4"
+  },
+  "license": "GPL-3.0",
+  "nodebb": {
+    "isPlugin": true
+  }
+}

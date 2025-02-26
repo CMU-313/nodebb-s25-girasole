@@ -48,7 +48,31 @@
 			<div class="d-flex gap-1 align-items-center">
 				{{{ if template.category }}}
 					{{{ if privileges.topics:create }}}
-					<a href="{config.relative_path}/compose?cid={cid}" component="category/post" id="new_topic" class="btn btn-primary btn-sm text-nowrap" data-ajaxify="false" role="button">[[category:new-topic-button]]</a>
+					<div class="btn-group">
+						<!-- Main New Topic Button -->
+						<a href="{config.relative_path}/compose?cid={cid}" component="category/post" id="new_topic" class="btn btn-primary btn-sm text-nowrap" data-ajaxify="false" role="button">
+							[[category:new-topic-button]]
+						</a>
+
+						<!-- Dropdown Toggle Button -->
+						<button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="caret"></span>
+						</button>
+
+						<!-- Dropdown Menu -->
+						<ul class="dropdown-menu dropdown-menu-end p-1 text-sm" role="menu">
+							<li>
+								<a href="{config.relative_path}/compose?cid={cid}" component="category/post" id="new_topic" class="dropdown-item" data-ajaxify="false" role="button">
+									Regular Topic
+								</a>
+							</li>
+							<li>
+								<a href="{config.relative_path}/compose?cid={cid}" component="category/post" id="new_topic" class="dropdown-item" data-ajaxify="false" role="button">
+									Post Anonymously
+								</a>
+							</li>
+						</ul>
+					</div>
 					{{{ end }}}
 				{{{ else }}}
 					{{{ if canPost }}}
