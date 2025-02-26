@@ -57,7 +57,6 @@ define('forum/topic/threadTools', [
 		});
 
 		topicContainer.on('click', '[component="topic/private"]', function () {
-			console.log('HIT treadTools.js line 60');
 			topicCommand('put', '/private', 'private');
 			return false;
 		});
@@ -397,7 +396,6 @@ define('forum/topic/threadTools', [
 		icon.toggleClass('hidden', !data.private);
 		ajaxify.data.private = data.private;
 		data.events = data.events ? data.events : [];
-		console.log('EVENTS', JSON.stringify(data.events));
 		posts.addTopicEvents(data.events);
 	};
 
