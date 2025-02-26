@@ -1,6 +1,6 @@
 <button type="button" class="btn-ghost-sm ff-secondary d-flex gap-2 dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <span component="category-selector-selected">
-        {{{ if (selectedCategory && !showCategorySelectLabel) }}}
+        {{{ if ((selectedCategory && !showCategorySelectLabel) && !multipleCategories) }}}
         <span class="category-item d-inline-flex align-items-center gap-1">
             {buildCategoryIcon(selectedCategory, "24px", "rounded-circle")}
             <span class="fw-semibold">{selectedCategory.name}</span>
@@ -16,7 +16,7 @@
     <input type="text" class="form-control form-control-sm" placeholder="[[search:type-to-search]]" autocomplete="off">
 </div>
 
-<div class="dropdown-menu p-1">
+<div class="dropdown-menu p-1" data-bs-auto-close="inside">
     <ul component="category/list" class="list-unstyled mb-0 text-sm category-dropdown-menu ghost-scrollbar" role="menu">
         <li component="category/no-matches" role="presentation" class="category hidden">
             <a class="dropdown-item rounded-1" role="menuitem">[[search:no-matches]]</a>
@@ -26,6 +26,11 @@
             <a class="dropdown-item rounded-1 {{{ if ./disabledClass }}}disabled{{{ end }}}" role="menuitem" href="#">{./level}
                 <span component="category-markup" style="{{{ if ./match }}}font-weight: bold;{{{end}}}">
                     <div class="category-item d-inline-flex align-items-center gap-1">
+                        {{{ if ./isSelected }}}
+                        <i class="fa-regular fa-square-check"></i>&nbsp;
+                        {{{ else }}}
+                        <i class="fa-regular fa-square"></i>&nbsp;
+                        {{{ end }}}
                         {{{ if ./icon }}}
                         {buildCategoryIcon(@value, "24px", "rounded-circle")}
                         {{{ end }}}

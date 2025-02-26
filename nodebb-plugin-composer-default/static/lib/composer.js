@@ -89,15 +89,15 @@ define('composer', [
 
 			if (!isMobile && window.location.pathname.startsWith(config.relative_path + '/compose')) {
 				/*
-				 *	If this conditional is met, we're no longer in mobile/tablet
-				 *	resolution but we've somehow managed to have a mobile
-				 *	composer load, so let's go back to the topic
+				 *  If this conditional is met, we're no longer in mobile/tablet
+				 *  resolution but we've somehow managed to have a mobile
+				 *  composer load, so let's go back to the topic
 				 */
 				history.back();
 			} else if (isMobile && !window.location.pathname.startsWith(config.relative_path + '/compose')) {
 				/*
-				 *	In this case, we're in mobile/tablet resolution but the composer
-				 *	that loaded was a regular composer, so let's fix the address bar
+				 *  In this case, we're in mobile/tablet resolution but the composer
+				 *  that loaded was a regular composer, so let's fix the address bar
 				 */
 				mobileHistoryAppend();
 			}
@@ -329,15 +329,15 @@ define('composer', [
 			This method enhances a composer container with client-side sugar (preview, etc)
 			Everything in here also applies to the /compose route
 		*/
-
 		if (!post_uuid && !postData) {
 			post_uuid = utils.generateUUID();
 			composer.posts[post_uuid] = ajaxify.data;
 			postData = ajaxify.data;
 			postContainer.attr('data-uuid', post_uuid);
 		}
-
-		categoryList.init(postContainer, composer.posts[post_uuid]);
+		categoryList.init(postContainer, composer.posts[post_uuid], {
+			multipleCategories: composer.posts[post_uuid].action && composer.posts[post_uuid].action === 'topics.post',
+		});
 		scheduler.init(postContainer, composer.posts);
 
 		formatting.addHandler(postContainer);
@@ -354,7 +354,7 @@ define('composer', [
 
 		postContainer.on('click', '.composer-submit', function (e) {
 			e.preventDefault();
-			e.stopPropagation();	// Other click events bring composer back to active state which is undesired on submit
+			e.stopPropagation();// Other click events bring composer back to active state which is undesired on submit
 
 			$(this).attr('disabled', true);
 			post(post_uuid);
@@ -477,11 +477,12 @@ define('composer', [
 			tagWhitelist: postData.category ? postData.category.tagWhitelist : ajaxify.data.tagWhitelist,
 			privileges: app.user.privileges,
 			selectedCategory: postData.category,
+			multipleCategories: postData.action === 'topics.post',
 			submitOptions: [
 				// Add items using `filter:composer.create`, or just add them to the <ul> in DOM
 				// {
-				// 	action: 'foobar',
-				// 	text: 'Text Label',
+				//  action: 'foobar',
+				//  text: 'Text Label',
 				// }
 			],
 		};
@@ -664,7 +665,7 @@ define('composer', [
 		var action = postData.action;
 
 		var checkTitle = (postData.hasOwnProperty('cid') || parseInt(postData.pid, 10)) && postContainer.find('input.title').length;
-		var isCategorySelected = !checkTitle || (checkTitle && parseInt(postData.cid, 10));
+		var isCategorySelected = !checkTitle || (checkTitle && parseInt(postData.cid, 10)) || (action === 'topics.post' && categoryList.getSelectedCid().length > 0);
 
 		// Specifically for checking title/body length via plugins
 		var payload = {
@@ -702,37 +703,37 @@ define('composer', [
 			return composerAlert(post_uuid, '[[error:scheduling-to-past]]');
 		}
 
-		let composerData = {
+		let composerData = [{
 			uuid: post_uuid,
-		};
+		}];
 		let method = 'post';
 		let route = '';
 
 		if (action === 'topics.post') {
 			route = '/topics';
-			composerData = {
+			composerData = categoryList.getSelectedCid().map(cid => ({
 				...composerData,
 				handle: handleEl ? handleEl.val() : undefined,
 				title: titleEl.val(),
 				content: bodyEl.val(),
 				thumb: thumbEl.val() || '',
-				cid: categoryList.getSelectedCid(),
+				cid: cid,
 				tags: tags.getTags(post_uuid),
 				timestamp: scheduler.getTimestamp(),
-			};
+			}));
 		} else if (action === 'posts.reply') {
 			route = `/topics/${postData.tid}`;
-			composerData = {
+			composerData = [{
 				...composerData,
 				tid: postData.tid,
 				handle: handleEl ? handleEl.val() : undefined,
 				content: bodyEl.val(),
 				toPid: postData.toPid,
-			};
+			}];
 		} else if (action === 'posts.edit') {
 			method = 'put';
 			route = `/posts/${postData.pid}`;
-			composerData = {
+			composerData = [{
 				...composerData,
 				pid: postData.pid,
 				handle: handleEl ? handleEl.val() : undefined,
@@ -741,7 +742,7 @@ define('composer', [
 				thumb: thumbEl.val() || '',
 				tags: tags.getTags(post_uuid),
 				timestamp: scheduler.getTimestamp(),
-			};
+			}];
 		}
 		var submitHookData = {
 			composerEl: postContainer,
@@ -761,52 +762,53 @@ define('composer', [
 		composer.minimize(post_uuid);
 		textareaEl.prop('readonly', true);
 
-		api[method](route, composerData)
-			.then((data) => {
-				submitBtn.removeAttr('disabled');
-				postData.submitted = true;
-
-				composer.discard(post_uuid);
-				drafts.removeDraft(postData.save_id);
-
-				if (data.queued) {
-					alerts.alert({
-						type: 'success',
-						title: '[[global:alert.success]]',
-						message: data.message,
-						timeout: 10000,
-						clickfn: function () {
-							ajaxify.go(`/post-queue/${data.id}`);
-						},
-					});
-				} else if (action === 'topics.post') {
-					if (submitHookData.redirect) {
-						ajaxify.go('topic/' + data.slug, undefined, (onComposeRoute || composer.bsEnvironment === 'xs' || composer.bsEnvironment === 'sm'));
+		(async () => {
+			await composerData.reduce(async (prevPromise, compData) => {
+				await prevPromise;
+				try {
+					const data = await api[method](route, compData);
+					submitBtn.removeAttr('disabled');
+					postData.submitted = true;
+					if (data.queued) {
+						alerts.alert({
+							type: 'success',
+							title: '[[global:alert.success]]',
+							message: data.message,
+							timeout: 10000,
+							clickfn: function () {
+								ajaxify.go(`/post-queue/${data.id}`);
+							},
+						});
+					} else if (action === 'topics.post') {
+						if (submitHookData.redirect) {
+							ajaxify.go('topic/' + data.slug, undefined, (onComposeRoute || composer.bsEnvironment === 'xs' || composer.bsEnvironment === 'sm'));
+						}
+					} else if (action === 'posts.reply') {
+						if (onComposeRoute || composer.bsEnvironment === 'xs' || composer.bsEnvironment === 'sm') {
+							window.history.back();
+						} else if (submitHookData.redirect &&
+							((ajaxify.data.template.name !== 'topic') ||
+							(ajaxify.data.template.topic && parseInt(postData.tid, 10) !== parseInt(ajaxify.data.tid, 10)))
+						) {
+							ajaxify.go('post/' + data.pid);
+						}
+					} else {
+						removeComposerHistory();
 					}
-				} else if (action === 'posts.reply') {
-					if (onComposeRoute || composer.bsEnvironment === 'xs' || composer.bsEnvironment === 'sm') {
-						window.history.back();
-					} else if (submitHookData.redirect &&
-						((ajaxify.data.template.name !== 'topic') ||
-						(ajaxify.data.template.topic && parseInt(postData.tid, 10) !== parseInt(ajaxify.data.tid, 10)))
-					) {
-						ajaxify.go('post/' + data.pid);
+					hooks.fire('action:composer.' + action, { composerData: composerData, data: data });
+				} catch (err) {
+					// Restore composer on error
+					composer.load(post_uuid);
+					textareaEl.prop('readonly', false);
+					if (err.message === '[[error:email-not-confirmed]]') {
+						return messagesModule.showEmailConfirmWarning(err.message);
 					}
-				} else {
-					removeComposerHistory();
+					composerAlert(post_uuid, err.message);
 				}
-
-				hooks.fire('action:composer.' + action, { composerData: composerData, data: data });
-			})
-			.catch((err) => {
-				// Restore composer on error
-				composer.load(post_uuid);
-				textareaEl.prop('readonly', false);
-				if (err.message === '[[error:email-not-confirmed]]') {
-					return messagesModule.showEmailConfirmWarning(err.message);
-				}
-				composerAlert(post_uuid, err.message);
-			});
+			}, Promise.resolve());
+			composer.discard(post_uuid);
+			drafts.removeDraft(postData.save_id);
+		})();
 	}
 
 	function onShow() {
