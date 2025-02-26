@@ -20,7 +20,7 @@ define('categorySelector', [
 
 		const selector = {
 			el: el,
-			selectedCategory: null,
+			selectedCategory: options.multipleCategories ? [] : null,
 		};
 
 		el.on('click', '[data-cid]', function () {
@@ -37,14 +37,30 @@ define('categorySelector', [
 		translator.translate(defaultSelectHtml, (translated) => {
 			defaultSelectHtml = translated;
 		});
+
 		selector.selectCategory = function (cid) {
 			const categoryEl = selector.el.find('[data-cid="' + cid + '"]');
-			selector.selectedCategory = {
-				cid: cid,
-				name: categoryEl.attr('data-name'),
-			};
+			console.log('SELECTO', JSON.stringify(ajaxify.data));
+			if (options.multipleCategories) {
+				const categoryObj = { cid: parseInt(cid, 10), name: categoryEl.attr('data-name') };
+				const index = selector.selectedCategory.findIndex(item => String(item.cid) === String(cid));
 
-			if (categoryEl.length) {
+				if (index === -1) {
+					selector.selectedCategory.push(categoryObj);
+				} else {
+					selector.selectedCategory.splice(index, 1);
+				}
+				ajaxify.data.selectedCategory = selector.selectedCategory.map(category => parseInt(category.cid, 10));
+			} else {
+				console.log('SELECTION w/o multipleCategories');
+				selector.selectedCategory = {
+					cid: cid,
+					name: categoryEl.attr('data-name'),
+				};
+			}
+
+
+			if (categoryEl.length && !options.multipleCategories) {
 				selector.el.find('[component="category-selector-selected"]').html(
 					categoryEl.find('[component="category-markup"]').html()
 				);
@@ -58,11 +74,17 @@ define('categorySelector', [
 			return selector.selectedCategory;
 		};
 		selector.getSelectedCid = function () {
+			if (options.multipleCategories) {
+				return selector.selectedCategory ? selector.selectedCategory.map(cat => cat.cid) : [];
+			}
 			return selector.selectedCategory ? selector.selectedCategory.cid : 0;
 		};
 
 		if (options.hasOwnProperty('selectedCategory')) {
-			app.parseAndTranslate(options.template, { selectedCategory: options.selectedCategory }, function (html) {
+			app.parseAndTranslate(options.template, {
+				selectedCategory: options.selectedCategory,
+				multipleCategories: ajaxify.data.multipleCategories,
+			}, function (html) {
 				selector.el.find('[component="category-selector-selected"]').html(
 					html.find('[component="category-selector-selected"]').html()
 				);

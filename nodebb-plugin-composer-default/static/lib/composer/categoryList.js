@@ -6,8 +6,11 @@ define('composer/categoryList', [
 	var categoryList = {};
 
 	var selector;
+	var CLoptions;
 
-	categoryList.init = function (postContainer, postData) {
+	categoryList.init = function (postContainer, postData, options) {
+		CLoptions = options || {};
+
 		var listContainer = postContainer.find('.category-list-container');
 		if (!listContainer.length) {
 			return;
@@ -27,15 +30,28 @@ define('composer/categoryList', [
 					changeCategory(postContainer, postData, selectedCategory);
 				}
 			},
+			multipleCategories: options.multipleCategories,
 		});
 		if (!selector) {
 			return;
 		}
 		if (postData.cid && postData.category) {
-			selector.selectedCategory = { cid: postData.cid, name: postData.category.name };
+			if (options.multipleCategories) {
+				selector.selectedCategory = [{ cid: postData.cid, name: postData.category.name }];
+				ajaxify.data.selectedCategory = selector.selectedCategory.map(category => parseInt(category.cid, 10));
+				ajaxify.data.multipleCategories = true;
+			} else {
+				selector.selectedCategory = { cid: postData.cid, name: postData.category.name };
+			}
 		} else if (ajaxify.data.template.compose && ajaxify.data.selectedCategory) {
 			// separate composer route
-			selector.selectedCategory = { cid: ajaxify.data.cid, name: ajaxify.data.selectedCategory };
+			if (options.multipleCategories) {
+				selector.selectedCategory = [{ cid: ajaxify.data.cid, name: ajaxify.data.selectedCategory }];
+				ajaxify.data.selectedCategory = selector.selectedCategory.map(category => parseInt(category.cid, 10));
+				ajaxify.data.multipleCategories = true;
+			} else {
+				selector.selectedCategory = { cid: ajaxify.data.cid, name: ajaxify.data.selectedCategory };
+			}
 		}
 
 		// this is the mobile category selector
@@ -54,6 +70,7 @@ define('composer/categoryList', [
 							changeCategory(postContainer, postData, selectedCategory);
 						}
 					},
+					multipleCategories: options.multipleCategories,
 				});
 			});
 
@@ -65,11 +82,10 @@ define('composer/categoryList', [
 	}
 
 	categoryList.getSelectedCid = function () {
-		var selectedCategory;
-		if (selector) {
-			selectedCategory = selector.getSelectedCategory();
+		if (CLoptions.multipleCategories) {
+			return selector.selectedCategory ? selector.selectedCategory.map(cat => cat.cid) : [];
 		}
-		return selectedCategory ? selectedCategory.cid : 0;
+		return selector.selectedCategory ? selector.selectedCategory.cid : 0;
 	};
 
 	categoryList.updateTaskbar = function (postContainer, postData) {
@@ -105,7 +121,7 @@ define('composer/categoryList', [
 			$(window).trigger('action:composer.changeCategory', {
 				postContainer: postContainer,
 				postData: postData,
-				selectedCategory: selectedCategory,
+				selectedCategory: selectedCategory[0],
 				categoryData: categoryData,
 			});
 		});
