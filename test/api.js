@@ -374,6 +374,20 @@ describe('API', async () => {
 		// For each express path, query for existence in read and write api schemas
 		paths.forEach((pathObj) => {
 			describe(`${pathObj.method.toUpperCase()} ${pathObj.path}`, () => {
+				it('should private a topic successfully', async () => {
+					const topicId = '1';
+					const payload = { expiry: 1585337827953 };
+				
+					const response = await request(app)
+					  .put(`/topics/${topicId}`)
+					  .send(payload)
+					  .set('Accept', 'application/json');
+				
+					expect(response.statusCode).toBe(200);
+					expect(response.body).toHaveProperty('status');
+					expect(response.body).toHaveProperty('response');
+				});
+
 				it('should be defined in schema docs', () => {
 					let schema = readApi;
 					if (pathObj.path.startsWith('/api/v3')) {
