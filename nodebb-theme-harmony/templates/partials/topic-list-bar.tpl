@@ -35,7 +35,7 @@
 				</a>
 			</div>
 
-			<!-- Search Bar -->
+			<!-- Search Bar (Searching posts by topic) -->
 			<div class="search">
 				<div class="input-group">
 					<input class="form-control form-control-sm" id="search-topics" type="text" placeholder="[[global:search]]"/>
