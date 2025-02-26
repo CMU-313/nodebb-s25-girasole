@@ -33,6 +33,9 @@ define('topicList', [
 
 		categoryTools.init();
 
+		// Calls function to handle search
+		TopicList.handleSearch();
+
 		TopicList.watchForNewPosts();
 		const states = ['watching', 'tracking'];
 		if (ajaxify.data.selectedFilter && ajaxify.data.selectedFilter.filter === 'watched') {
@@ -246,6 +249,36 @@ define('topicList', [
 			callback();
 		});
 	}
+
+	// Beginning of search functions
+	TopicList.handleSearch = function () {
+        $('#search-topics').on('keyup', utils.debounce(doSearch, 250));
+    };
+
+    function doSearch() {
+		$('[component="topics/search/icon"]').removeClass('fa-search').addClass('fa-spinner fa-spin');
+
+        const keyword = $('#search-topics').val().toLowerCase();
+        if (!keyword) {
+            return renderSearchResults({ topics: ajaxify.data.topics });
+        }
+
+        const topicsByKeyword = ajaxify.data.topics.filter(function (topic) {
+			const title = topic.title.toLowerCase();
+            return title.includes(keyword);
+        });
+
+        renderSearchResults({ topics: topicsByKeyword });
+    }
+
+    function renderSearchResults(data) {
+        app.parseAndTranslate('category', 'topics', data, function (html) {
+            topicListEl.html(html);
+            html.find('.timeago').timeago();
+			$('[component="topics/search/icon"]').addClass('fa-search').removeClass('fa-spinner fa-spin');
+        });
+    }
+	// End of search functions
 
 	return TopicList;
 });
