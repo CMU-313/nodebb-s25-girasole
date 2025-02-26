@@ -326,6 +326,32 @@ if (document.readyState === 'loading') {
 		hooks.fire('action:composer.post.new', params);
 	};
 
+	app.anonymousReply = async function (params) {
+		// For backwards compatibility, if someone calls app.anonymousReply(tid)
+		if (typeof params !== 'object') {
+		  console.warn('[deprecated] app.anonymousReply(tid) — please pass in an object');
+		  params = {
+			tid: params,
+		  };
+		}
+	  
+		// We need hooks and api
+		const [hooks, api] = await app.require(['hooks', 'api']);
+	  
+		// If we're on a topic page, we can use ajaxify.data.titleRaw.
+		// Otherwise, fetch the topic info from the server.
+		params.title = (ajaxify.data.template.topic ?
+		  ajaxify.data.titleRaw :
+		  (await api.get(`/topics/${params.tid}`)).titleRaw
+		);
+	  
+		// Mark this as an anonymous reply
+		params.anonymous = true;
+	  
+		// Fire the same composer hook as a normal reply, but with an 'anonymous' flag
+		hooks.fire('action:composer.post.new', params);
+	  };
+
 	app.loadJQueryUI = function (callback) {
 		if (typeof $().autocomplete === 'function') {
 			return callback();
