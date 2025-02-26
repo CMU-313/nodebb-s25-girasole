@@ -21,9 +21,8 @@ define('categorySearch', ['alerts', 'bootstrap', 'api'], function (alerts, boots
 			return;
 		}
 
-		const toggleVisibility = searchEl.parent('[component="category/dropdown"]').length > 0 ||
-			searchEl.parent('[component="category-selector"]').length > 0;
-
+		const toggleVisibility = (searchEl.parent('[component="category/dropdown"]').length > 0 ||
+			searchEl.parent('[component="category-selector"]').length > 0);
 		el.on('show.bs.dropdown', function () {
 			if (toggleVisibility) {
 				el.find('.dropdown-toggle').css({ visibility: 'hidden' });
@@ -59,7 +58,7 @@ define('categorySearch', ['alerts', 'bootstrap', 'api'], function (alerts, boots
 			}
 		});
 
-		el.on('hide.bs.dropdown', function () {
+		el.on('hide.bs.dropdown', function (ev) {
 			if (toggleVisibility) {
 				el.find('.dropdown-toggle').css({ visibility: 'inherit' });
 				searchEl.addClass('hidden');
@@ -67,6 +66,11 @@ define('categorySearch', ['alerts', 'bootstrap', 'api'], function (alerts, boots
 
 			searchEl.off('click');
 			searchEl.find('input').off('keyup');
+
+			if (options.multipleCategories && ev.clickEvent && $(ev.clickEvent.target).closest('.dropdown-menu').length) {
+				ev.preventDefault();
+				renderList(categoriesList);
+			}
 		});
 
 		function loadList(search, callback) {
@@ -92,7 +96,12 @@ define('categorySearch', ['alerts', 'bootstrap', 'api'], function (alerts, boots
 				c.selected = selectedCids.includes(String(c.cid));
 			});
 			app.parseAndTranslate(options.template, {
-				categoryItems: categories.slice(0, 200),
+				categoryItems: categories.slice(0, 200).map(category => ({
+					...category,
+					isSelected: ajaxify.data.selectedCategory ? ajaxify.data.selectedCategory.includes(
+						parseInt(category.cid, 10)
+					) : false,
+				})),
 				selectedCategory: ajaxify.data.selectedCategory,
 				allCategoriesUrl: ajaxify.data.allCategoriesUrl,
 			}, function (html) {
