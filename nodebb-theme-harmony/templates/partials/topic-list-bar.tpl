@@ -38,9 +38,9 @@
 			<!-- Search Bar -->
 			<div class="search">
 				<div class="input-group">
-					<input class="form-control form-control-sm" id="search-posts" type="text" placeholder="[[global:search]]"/>
+					<input class="form-control form-control-sm" id="search-topics" type="text" placeholder="[[global:search]]"/>
 					<button class="btn btn-primary btn-sm" type="button" aria-label="[[global:search]]">
-						<i component="user/search/icon" class="fa fa-search"></i>
+						<i component="topics/search/icon" class="fa fa-search"></i>
 					</button>
 				</div>
 			</div>
