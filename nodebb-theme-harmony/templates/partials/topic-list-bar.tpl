@@ -35,6 +35,16 @@
 				</a>
 			</div>
 
+			<!-- Search Bar (Searching posts by topic) -->
+			<div class="search">
+				<div class="input-group">
+					<input class="form-control form-control-sm" id="search-topics" type="text" placeholder="[[global:search]]"/>
+					<button class="btn btn-primary btn-sm" type="button" aria-label="[[global:search]]">
+						<i component="topics/search/icon" class="fa fa-search"></i>
+					</button>
+				</div>
+			</div>
+
 			<div class="d-flex gap-1 align-items-center">
 				{{{ if template.category }}}
 					{{{ if privileges.topics:create }}}
