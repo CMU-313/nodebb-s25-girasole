@@ -14,7 +14,7 @@ module.exports = function (Topics) {
             const searchResult = { topics: topicsByKeyword };
             return searchResult;
         }
-        
+
         return { topics: initTopics }
 	};
 };
