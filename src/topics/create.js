@@ -167,7 +167,7 @@ module.exports = function (Topics) {
 		data = await plugins.hooks.fire('filter:topic.reply', data);
 		const { tid } = data;
 		const { uid } = data;
-		const { anonymous } = data;
+		const anonymous = !!data.anonymous;
 
 		const [topicData, isAdmin] = await Promise.all([
 			Topics.getTopicData(tid),
@@ -177,8 +177,7 @@ module.exports = function (Topics) {
 		await canReply(data, topicData);
 
 		data.cid = topicData.cid;
-		data.anonymous = anonymous || false;
-
+		data.anonymous = Boolean(anonymous);
 		await guestHandleValid(data);
 		data.content = String(data.content || '').trimEnd();
 

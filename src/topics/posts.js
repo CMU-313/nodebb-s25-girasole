@@ -2,13 +2,13 @@
 'use strict';
 
 const _ = require('lodash');
-const validator = require('validator');
+// const validator = require('validator');
 const nconf = require('nconf');
 
 const db = require('../database');
 const user = require('../user');
 const posts = require('../posts');
-const meta = require('../meta');
+// const meta = require('../meta');
 const plugins = require('../plugins');
 const utils = require('../utils');
 
@@ -131,13 +131,14 @@ module.exports = function (Topics) {
 
 		postData.forEach((postObj, i) => {
 			if (postObj) {
+				postObj.anonymous = !!postObj.anonymous;
 				if (postObj.anonymous) {
 					postObj.user = {
 						username: 'Anonymous',
 						displayname: 'Anonymous',
 						picture: 'assets/images/anonymous-avatar.png',
 						'icon:text': 'A',
-						'icon:bgColor': '#666'
+						'icon:bgColor': '#666',
 					};
 				} else {
 					postObj.user = postObj.uid ? userData[postObj.uid] : { ...userData[postObj.uid] };
@@ -150,10 +151,8 @@ module.exports = function (Topics) {
 				postObj.votes = postObj.votes || 0;
 				postObj.replies = replies[i];
 				postObj.selfPost = parseInt(uid, 10) > 0 && parseInt(uid, 10) === postObj.uid;
-			
 			}
 		});
-
 		const result = await plugins.hooks.fire('filter:topics.addPostData', {
 			posts: postData,
 			uid: uid,

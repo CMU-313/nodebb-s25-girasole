@@ -35,7 +35,7 @@ module.exports = function (Posts) {
 			tid: tid,
 			content: content,
 			timestamp: timestamp,
-			anonymous: data.anonymous || false
+			anonymous: Boolean(data.anonymous),
 		};
 
 		if (data.toPid) {
