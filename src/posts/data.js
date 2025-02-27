@@ -7,9 +7,8 @@ const utils = require('../utils');
 const intFields = [
 	'uid', 'pid', 'tid', 'deleted', 'timestamp',
 	'upvotes', 'downvotes', 'deleterUid', 'edited',
-	'replies', 'bookmarks', 'anonymous'
+	'replies', 'bookmarks', 'anonymous',
 ];
-
 module.exports = function (Posts) {
 	Posts.getPostsFields = async function (pids, fields) {
 		if (!Array.isArray(pids) || !pids.length) {

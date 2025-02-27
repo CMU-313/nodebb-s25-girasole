@@ -290,30 +290,25 @@ document.addEventListener('click', function (event) {
 	// look for clicks on [component="topic/reply-anonymously"]
 	const el = event.target.closest('[component="topic/reply-anonymously"]');
 	if (!el) return;
-  
 	event.preventDefault();
 	console.log('[DEBUG] Anonymous reply button clicked!');
-  
 	// get the topic ID from ajaxify.data if on a topic page
 	const tid = ajaxify.data && ajaxify.data.tid;
 	if (!tid) {
-	  alert('No topic ID found!');
-	  return;
+		// alert('No topic ID found!');
+		return;
 	}
-  
 	// call a function that opens the composer with an anonymous flag
 	app.anonymousReply({ tid: tid });
-  });
-  
-  // define the function that sets up an "anonymous" composer
-  app.anonymousReply = async function (params) {
+});
+// define the function that sets up an "anonymous" composer
+app.anonymousReply = async function (params) {
 	if (typeof params !== 'object') {
-	  params = { tid: params };
+		params = { tid: params };
 	}
-	const [hooks, api] = await app.require(['hooks', 'api']);
-	params.title = ajaxify.data && ajaxify.data.titleRaw || 'Untitled';
+	const [hooks] = await app.require(['hooks', 'api']);
+	params.title = (ajaxify.data && ajaxify.data.titleRaw) || 'Untitled';
 	params.anonymous = true; // the important flag
-  
 	console.log('[DEBUG] Opening composer with anonymous = true', params);
 	hooks.fire('action:composer.post.new', params);
-  };
+};

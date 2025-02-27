@@ -115,7 +115,6 @@ define('forum/topic/postTools', [
 			e.preventDefault();
 			onReplyClicked($(this), tid);
 		});
-		
 		$('.topic').on('click', '[component="topic/replyAnonymously"]', function (e) {
 			e.preventDefault();
 			onAnonymousReplyClicked($(this), tid);
@@ -275,9 +274,8 @@ define('forum/topic/postTools', [
 	}
 
 	async function onReplyClicked(button, tid) {
-		console.log("reply clicked");
+		console.log('reply clicked');
 		const selectedNode = await getSelectedNode();
-
 		showStaleWarning(async function () {
 			let username = await getUserSlug(button);
 			if (getData(button, 'data-uid') === '0' || !getData(button, 'data-userslug')) {
@@ -298,24 +296,24 @@ define('forum/topic/postTools', [
 					selectedPid: selectedNode.pid,
 				});
 			} else {
-				console.log("non anonymous about to post")
+				console.log('non anonymous about to post');
 				hooks.fire('action:composer.post.new', {
 					tid: tid,
 					pid: toPid,
 					title: ajaxify.data.titleRaw,
 					body: username ? username + ' ' : ($('[component="topic/quickreply/text"]').val() || ''),
-					anonymous: false
+					anonymous: false,
 				});
 			}
 		});
 	}
 
 	async function onAnonymousReplyClicked(button, tid) {
-		console.log("reply anonymously clicked");
+		console.log('reply anonymously clicked');
 		const selectedNode = await getSelectedNode();
 
 		showStaleWarning(async function () {
-			console.log("entered showStaleWarning");
+			console.log('entered showStaleWarning');
 			let username = await getUserSlug(button);
 			if (getData(button, 'data-uid') === '0' || !getData(button, 'data-userslug')) {
 				username = '';
@@ -335,13 +333,13 @@ define('forum/topic/postTools', [
 					selectedPid: selectedNode.pid,
 				});
 			} else {
-				console.log("anonymous reply about to fire hook!");
+				console.log('anonymous reply about to fire hook!');
 				hooks.fire('action:composer.post.new', {
 					tid: tid,
 					pid: toPid,
 					title: ajaxify.data.titleRaw,
 					body: username ? username + ' ' : ($('[component="topic/quickreply/text"]').val() || ''),
-					anonymous: true
+					anonymous: true,
 				});
 			}
 		});

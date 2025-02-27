@@ -56,7 +56,7 @@ exports.post = async function (req, res) {
 		data.uid = 0;
 		data.username = 'Anonymous';
 		data.picture = '/assets/img/anonymous.png';
-	  }
+	}
 
 	if (!data.content) {
 		return helpers.noScriptErrors(req, res, '[[error:invalid-data]]', 400);
