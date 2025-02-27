@@ -115,6 +115,11 @@ define('forum/topic/postTools', [
 			e.preventDefault();
 			onReplyClicked($(this), tid);
 		});
+		$('.topic').on('click', '[component="topic/replyAnonymously"]', function (e) {
+			e.preventDefault();
+			onAnonymousReplyClicked($(this), tid);
+		});
+
 
 		$('.topic').on('click', '[component="topic/reply-as-topic"]', function () {
 			translator.translate(`[[topic:link-back, ${ajaxify.data.titleRaw}, ${config.relative_path}/topic/${ajaxify.data.slug}]]`, function (body) {
@@ -269,8 +274,8 @@ define('forum/topic/postTools', [
 	}
 
 	async function onReplyClicked(button, tid) {
+		console.log('reply clicked');
 		const selectedNode = await getSelectedNode();
-
 		showStaleWarning(async function () {
 			let username = await getUserSlug(button);
 			if (getData(button, 'data-uid') === '0' || !getData(button, 'data-userslug')) {
@@ -291,11 +296,50 @@ define('forum/topic/postTools', [
 					selectedPid: selectedNode.pid,
 				});
 			} else {
+				console.log('non anonymous about to post');
 				hooks.fire('action:composer.post.new', {
 					tid: tid,
 					pid: toPid,
 					title: ajaxify.data.titleRaw,
 					body: username ? username + ' ' : ($('[component="topic/quickreply/text"]').val() || ''),
+					anonymous: false,
+				});
+			}
+		});
+	}
+
+	async function onAnonymousReplyClicked(button, tid) {
+		console.log('reply anonymously clicked');
+		const selectedNode = await getSelectedNode();
+
+		showStaleWarning(async function () {
+			console.log('entered showStaleWarning');
+			let username = await getUserSlug(button);
+			if (getData(button, 'data-uid') === '0' || !getData(button, 'data-userslug')) {
+				username = '';
+			}
+
+			const toPid = button.is('[component="post/reply"]') ? getData(button, 'data-pid') : null;
+			const isQuoteToPid = !toPid || !selectedNode.pid || toPid === selectedNode.pid;
+
+			if (selectedNode.text && isQuoteToPid) {
+				username = username || selectedNode.username;
+				hooks.fire('action:composer.addQuote', {
+					tid: tid,
+					pid: toPid,
+					title: ajaxify.data.titleRaw,
+					username: username,
+					body: selectedNode.text,
+					selectedPid: selectedNode.pid,
+				});
+			} else {
+				console.log('anonymous reply about to fire hook!');
+				hooks.fire('action:composer.post.new', {
+					tid: tid,
+					pid: toPid,
+					title: ajaxify.data.titleRaw,
+					body: username ? username + ' ' : ($('[component="topic/quickreply/text"]').val() || ''),
+					anonymous: true,
 				});
 			}
 		});

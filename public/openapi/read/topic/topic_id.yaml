@@ -63,6 +63,8 @@ get:
                           type: string
                         timestamp:
                           type: number
+                        anonymous:
+                          type: boolean 
                         votes:
                           type: number
                         deleted:

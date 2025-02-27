@@ -51,6 +51,13 @@ exports.post = async function (req, res) {
 	};
 	req.body.noscript = 'true';
 
+	// ANONYMOUS OVERRIDE: If anonymous flag is set, post as Anonymous
+	if (body.anonymous) {
+		data.uid = 0;
+		data.username = 'Anonymous';
+		data.picture = '/assets/img/anonymous.png';
+	}
+
 	if (!data.content) {
 		return helpers.noScriptErrors(req, res, '[[error:invalid-data]]', 400);
 	}
