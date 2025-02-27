@@ -6,7 +6,7 @@ module.exports = function (Topics) {
 		const initTopics = query.initTopics || null;
 
         if (initTopics) {
-            const topicsByKeyword = initTopics.filter(function (topic) {
+            const topicsByKeyword = initTopics.filter((topic) => {
                 const title = topic.title.toLowerCase();
                 return title.includes(keyword);
             });
@@ -15,6 +15,6 @@ module.exports = function (Topics) {
             return searchResult;
         }
 
-        return { topics: initTopics }
+        return { topics: initTopics };
 	};
 };
