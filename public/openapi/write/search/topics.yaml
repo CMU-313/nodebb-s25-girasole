@@ -1,0 +1,46 @@
+get:
+  tags:
+    - search
+  summary: find topics by keyword
+  description: |
+    This operation returns a set of topics matching the keyword search.
+
+    If post topics are already filtere through, they are passed in via the query.
+  parameters:
+    - in: query
+      name: 'keyword'
+      schema:
+        type: string
+      required: false
+      description: The keyword used in the topics search
+      example: 'welcome'
+    - in: query
+      name: 'initTopics'
+      schema:
+        type: array
+      required: false
+      description: A list of initial topics before the search was initiated according to the category, filters, etc.
+      example: '0'
+  responses:
+    '200':
+      description: matching topics successfully retrieved
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: ../../components/schemas/Status.yaml#/Status
+              response:
+                type: object
+                properties:
+                  topics:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          description: The topic title which contains the keyword
+    '400':
+      $ref: ../../components/responses/400.yaml#/400

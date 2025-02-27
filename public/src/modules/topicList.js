@@ -8,7 +8,9 @@ define('topicList', [
 	'tagFilter',
 	'forum/category/tools',
 	'hooks',
-], function (infinitescroll, handleBack, topicSelect, categoryFilter, tagFilter, categoryTools, hooks) {
+	'alerts',
+	'api',
+], function (infinitescroll, handleBack, topicSelect, categoryFilter, tagFilter, categoryTools, hooks, alerts, api) {
 	const TopicList = {};
 	let templateName = '';
 
@@ -259,16 +261,16 @@ define('topicList', [
 		$('[component="topics/search/icon"]').removeClass('fa-search').addClass('fa-spinner fa-spin');
 
 		const keyword = $('#search-topics').val().toLowerCase();
-		if (!keyword) {
-			return renderSearchResults({ topics: ajaxify.data.topics });
-		}
+		const initTopics = ajaxify.data.topics;
 
-		const topicsByKeyword = ajaxify.data.topics.filter(function (topic) {
-			const title = topic.title.toLowerCase();
-			return title.includes(keyword);
-		});
+		const query = {
+			keyword: keyword,
+			initTopics: initTopics,
+		};
 
-		renderSearchResults({ topics: topicsByKeyword });
+		api.get('/api/v3/search/topics', query)
+			.then(renderSearchResults)
+			.catch(alerts.error);
 	}
 
 	function renderSearchResults(data) {

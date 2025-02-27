@@ -57,6 +57,15 @@ searchApi.categories = async (caller, data) => {
 	return { categories: result.categories };
 };
 
+searchApi.topics = async (caller, query) => {
+	const keyword = query.keyword || '';
+	const initTopics = query.initTopics || null;
+
+	const searchResults = await topics.searchByKeyword({ keyword, initTopics });
+
+	return searchResults;
+};
+
 async function findMatchedCids(uid, data) {
 	const result = await categories.search({
 		uid: uid,
