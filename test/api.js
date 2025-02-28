@@ -374,6 +374,30 @@ describe('API', async () => {
 		// For each express path, query for existence in read and write api schemas
 		paths.forEach((pathObj) => {
 			describe(`${pathObj.method.toUpperCase()} ${pathObj.path}`, () => {
+				it('should private a topic successfully', async () => {
+					if (pathObj.path !== '/topics/{tid}' || pathObj.method.toLowerCase() !== 'put') {
+						return;
+					}
+
+					const topicId = '1';
+					const payload = { expiry: 1585337827953 };
+
+					const topicsUrl = `${nconf.get('url')}/topics/${topicId}`;
+
+					const response = await request.put(topicsUrl, {
+						jar: jar,
+						headers: {
+							Accept: 'application/json',
+							'x-csrf-token': csrfToken,
+						},
+						body: payload,
+					});
+
+					assert.strictEqual(response.response.statusCode, 200, 'Expected status code 200');
+					assert(response.body.hasOwnProperty('status'), 'Response should have property "status"');
+					assert(response.body.hasOwnProperty('response'), 'Response should have property "response"');
+				});
+
 				it('should be defined in schema docs', () => {
 					let schema = readApi;
 					if (pathObj.path.startsWith('/api/v3')) {
