@@ -8,7 +8,9 @@ define('topicList', [
 	'tagFilter',
 	'forum/category/tools',
 	'hooks',
-], function (infinitescroll, handleBack, topicSelect, categoryFilter, tagFilter, categoryTools, hooks) {
+	'alerts',
+	'api',
+], function (infinitescroll, handleBack, topicSelect, categoryFilter, tagFilter, categoryTools, hooks, alerts, api) {
 	const TopicList = {};
 	let templateName = '';
 
@@ -32,6 +34,9 @@ define('topicList', [
 		loadTopicsCallback = cb || loadTopicsAfter;
 
 		categoryTools.init();
+
+		// Calls function to handle search
+		TopicList.handleSearch();
 
 		TopicList.watchForNewPosts();
 		const states = ['watching', 'tracking'];
@@ -246,6 +251,36 @@ define('topicList', [
 			callback();
 		});
 	}
+
+	// Beginning of search functions
+	TopicList.handleSearch = function () {
+		$('#search-topics').on('keyup', utils.debounce(doSearch, 250));
+	};
+
+	function doSearch() {
+		$('[component="topics/search/icon"]').removeClass('fa-search').addClass('fa-spinner fa-spin');
+
+		const keyword = $('#search-topics').val().toLowerCase();
+		const initTopics = ajaxify.data.topics;
+
+		const query = {
+			keyword: keyword,
+			initTopics: initTopics,
+		};
+
+		api.get('/api/v3/search/topics', query)
+			.then(renderSearchResults)
+			.catch(alerts.error);
+	}
+
+	function renderSearchResults(data) {
+		app.parseAndTranslate('category', 'topics', data, function (html) {
+			topicListEl.html(html);
+			html.find('.timeago').timeago();
+			$('[component="topics/search/icon"]').addClass('fa-search').removeClass('fa-spinner fa-spin');
+		});
+	}
+	// End of search functions
 
 	return TopicList;
 });
