@@ -34,6 +34,8 @@ USER ${USER}
 RUN npm install --omit=dev
     # TODO: generate lockfiles for each package manager
     ## pnpm import \
+RUN npm install nodebb-theme-harmony
+RUN npm install nodebb-plugin-composer-default
 
 FROM node:lts-slim AS final
 
