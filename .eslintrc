@@ -1,3 +1,7 @@
 {
-	"extends": "nodebb"
+	"extends": "nodebb", 
+    "rules": {
+        "n/no-callback-literal": 0, 
+        "n/no-deprecated-api": 0
+    }
 }
