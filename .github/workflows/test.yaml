@@ -80,6 +80,9 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      - name: Run JSStandard
+        run: npm run JSStandard
+
       - name: Node tests
         run: npm test
 
