@@ -32,8 +32,8 @@
 
 			{{{ if posts.anonymous }}}
 			<span>ANONYMOUS</span>
-            {{{ else }}}
-            <a class="fw-bold text-nowrap" href="{{{ if ./user.userslug }}}{config.relative_path}/user/{./user.userslug}{{{ else }}}#{{{ end }}}" data-username="{posts.user.username}" data-uid="{posts.user.uid}">{posts.user.displayname}</a>
+			{{{ else }}}
+			<a class="fw-bold text-nowrap" href="{{{ if ./user.userslug }}}{config.relative_path}/user/{./user.userslug}{{{ else }}}#{{{ end }}}" data-username="{posts.user.username}" data-uid="{posts.user.uid}">{posts.user.displayname}</a>
 			{{{ end }}}
 
 			{{{ each posts.user.selectedGroups }}}
@@ -71,6 +71,15 @@
 
 		<div class="content mt-2 text-break" component="post/content" itemprop="text">
 			{posts.content}
+
+		{{{if !posts.isEnglish }}}
+			<div class="sensitive-content-message">
+			<a class="btn btn-sm btn-primary view-translated-btn">Click here to view the translated message.</a>
+			</div>
+			<div class="translated-content" style="display:none;">
+			{posts.translatedContent}
+			</div>
+		{{{end}}}
 		</div>
 	</div>
 </div>

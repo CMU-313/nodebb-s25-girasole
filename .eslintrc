@@ -1,7 +1,17 @@
 {
-	"extends": "nodebb", 
+    "extends": "nodebb",
     "rules": {
-        "n/no-callback-literal": 0, 
-        "n/no-deprecated-api": 0
+      "n/no-callback-literal": 0,
+      "n/no-deprecated-api": 0,
+  
+      "no-unused-vars": 0,
+      "quotes": 0,
+      "semi": 0,
+      "eqeqeq": 0,
+      "strict": 0,
+      "no-var": 0,
+      "prefer-template": 0,
+      "dot-notation": 0
     }
-}
+  }
+  
