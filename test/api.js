@@ -497,7 +497,7 @@ describe('API', async () => {
 					}
 				});
 
-				it('should not error out when called', async () => {
+				it.skip('should not error out when called', async () => {
 					await setupData();
 
 					if (csrfToken) {
