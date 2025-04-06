@@ -71,7 +71,7 @@ define('forum/topic', [
 		handleThumbs();
 
 		$(window).on('scroll', utils.debounce(updateTopicTitle, 250));
-        configurePostToggle();
+		configurePostToggle();
 
 		handleTopicSearch();
 
