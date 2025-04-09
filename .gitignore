@@ -76,3 +76,5 @@ package.json
 
 ## Databases
 dump.rdb
+
+.env
